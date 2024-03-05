@@ -4,37 +4,42 @@
 """
 
 
-def extended_euclid(a, b):
-    """
-    Расширенный алгоритм Евклида для нахождения x, y таких, что ax + by = gcd(a, b),
-    возвращает gcd(a, b), x, y и промежуточные результаты.
-    """
-    if a == 0:
-        return (b, 0, 1, [(b, 0, 1)])
-    else:
-        gcd, x1, y1, intermediates = extended_euclid(b % a, a)
-        x = y1 - (b // a) * x1
-        y = x1
-        intermediates.append((gcd, x, y))
-        return (gcd, x, y, intermediates)
+def extended_euclidean_algorithm(a, b):
+    old_r, r = a, b
+    old_s, s = 1, 0
+    old_t, t = 0, 1
 
+    print("Начальные значения:")
+    print("r =", old_r, ", s =", old_s, ", t =", old_t)
+    print(" ")
 
-def solve_diophantine(a, b, c):
-    """
-    Решает диофантово уравнение ax + by = c и выводит промежуточные результаты.
-    """
-    gcd, x, y, intermediates = extended_euclid(a, b)
+    while r != 0:
+        quotient = old_r // r
+        old_r, r = r, old_r - quotient * r
+        old_s, s = s, old_s - quotient * s
+        old_t, t = t, old_t - quotient * t
 
-    # Проверяем, делится ли c на НОД(a, b) для определения возможности решения уравнения.
+        print("Промежуточные значения:")
+        print("r =", old_r, ", s =", old_s, ", t =", old_t)
+        print(" ")
+
+    return old_r, old_s, old_t
+
+def solve_diophantine_equation(a, b, c):
+    gcd, x, y = extended_euclidean_algorithm(a, b)
+
     if c % gcd == 0:
-        # Масштабируем решение, чтобы получить конечные x и y для ax + by = c
         x *= c // gcd
         y *= c // gcd
-        return f"Уравнение {a}x + {b}y = {c} имеет решение: x = {x}, y = {y}", intermediates
+        return x, y
     else:
-        return "Уравнение не имеет решения", intermediates
+        return "Нет решений"
 
+a = 42
+b = 30
+c = 18
 
-# Пример данных
-a, b, c = 37, 11, 1
-print(solve_diophantine(a, b, c))
+solution = solve_diophantine_equation(a, b, c)
+
+print(f"Для уравнения {a}*x + {b}*y = {c}, решение:")
+print(f"x = {solution[0]}, y = {solution[1]}")
